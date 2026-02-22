@@ -83,10 +83,10 @@ class PixelFont:
         """Render text to surface."""
         self.font.render_to(surface, pos, text, fgcolor=color)
 
-    def size(self, text: str) -> Tuple[int, int]:
+    def get_text_size(self, text: str) -> Tuple[int, int]:
         """Get the size of rendered text."""
         rect = self.font.get_rect(text)
-        return rect.width, rect.height
+        return (rect.width, rect.height)
 
 
 # ============ UI Components ============
@@ -172,7 +172,7 @@ class ChannelTabs:
 
             # Draw channel name
             name = channel.get("name", "???")[:10]
-            text_width, text_height = self.font.size(name)
+            text_width, text_height = self.font.get_text_size(name)
             text_x = x + (self.tab_width - 4 - text_width) // 2
             text_y = y + (self.tab_height - text_height) // 2
             self.font.render(surface, name, (text_x, text_y), text_color)
@@ -243,7 +243,7 @@ class PostList:
         if not self.posts:
             # Show empty state
             text = "No posts yet..."
-            text_width, text_height = self.font.size(text)
+            text_width, text_height = self.font.get_text_size(text)
             x = self.rect.x + (self.rect.width - text_width) // 2
             y = self.rect.y + (self.rect.height - text_height) // 2
             self.font.render(surface, text, (x, y), Colors.TEXT_SECONDARY)
@@ -357,7 +357,7 @@ class PostDetail:
 
         for word in words:
             test_line = line + " " + word if line else word
-            line_width, _ = self.font.size(test_line)
+            line_width, _ = self.font.get_text_size(test_line)
             if line_width > max_width:
                 if y >= self.rect.y and y < self.rect.bottom - 20:
                     self.font.render(surface, line, (self.rect.x + 10, y), Colors.TEXT_PRIMARY)
@@ -442,7 +442,7 @@ class StatusBar:
             self.font.render(surface, info, (self.rect.x + 10, self.rect.y + 6), Colors.ACCENT)
 
         # Draw message
-        text_width, _ = self.font.size(self.message)
+        text_width, _ = self.font.get_text_size(self.message)
         self.font.render(surface, self.message,
                         (self.rect.right - text_width - 10, self.rect.y + 6),
                         Colors.TEXT_SECONDARY)
@@ -515,7 +515,11 @@ class RidditPet:
         pygame.init()
         pygame.display.set_caption("Riddit Pet - 8-bit Reader")
 
-        self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+        # 无边框窗口（桌面宠物风格）
+        self.screen = pygame.display.set_mode(
+            (WINDOW_WIDTH, WINDOW_HEIGHT),
+            pygame.NOFRAME  # 无边框
+        )
         self.clock = pygame.time.Clock()
         self.running = True
 
